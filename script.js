@@ -44,10 +44,10 @@ const heartImages = [
     'sonlla2.jpg',
     'sonlla3.jpg',
     'sonlla4.jpg',
-    'sonlla5.jpg',
-    'sonlla6.jpg',
-    'sonlla7.jpg',
-    'sonlla8.jpg',
+    // 'sonlla5.jpg',
+    // 'sonlla6.jpg',
+    // 'sonlla7.jpg',
+    // 'sonlla8.jpg',
 ];
 
 const textColorsCycle = [
