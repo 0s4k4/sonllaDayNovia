@@ -31,6 +31,8 @@ const phrases = [
     "Me encantas sonlla",
     "ashiteru sonlla",
     "Te quiero mucho sonlla",
+    "Eres la mejor sonlla",
+    "Te amo sonlla",
 ];
 
 const images = [
@@ -39,13 +41,12 @@ const images = [
 
 const heartImages = [
     'sonlla.jpg',
-    'sonlla2.jpg',
     'sonlla3.jpg',
     'sonlla4.jpg',
-    // 'sonlla5.jpg',
-    // 'sonlla6.jpg',
-    // 'sonlla7.jpg',
-    // 'sonlla8.jpg',
+    'sonlla5.jpg',
+    'sonlla6.jpg',
+    'sonlla7.jpg',
+    'sonlla8.jpg',
 ];
 
 const textColorsCycle = [
@@ -77,7 +78,9 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 
     stars.length = 0;
-    for (let i = 0; i < 300; i++) {
+    // Reduce el número de estrellas para móviles
+    const starCount = window.innerWidth < 800 ? 100 : 300;
+    for (let i = 0; i < starCount; i++) {
         stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -97,6 +100,7 @@ function drawBackground() {
 }
 
 function drawStars() {
+    // Reduce el blur y efectos para móviles
     stars.forEach(star => {
         star.alpha += star.delta;
         if (star.alpha <= 0 || star.alpha >= 1) star.delta *= -1;
@@ -223,6 +227,12 @@ function drawFallingElements() {
         transitionProgress
     );
 
+    // Limita el número de elementos simultáneos para móviles
+    const maxElements = window.innerWidth < 800 ? 20 : 50;
+    while (fallingElements.length > maxElements) {
+        fallingElements.pop();
+    }
+
     for (let i = fallingElements.length - 1; i >= 0; i--) {
         const el = fallingElements[i];
 
@@ -230,12 +240,11 @@ function drawFallingElements() {
 
         if (el.z <= 0) {
             fallingElements.splice(i, 1);
-            createFallingElement();
+            if (fallingElements.length < maxElements) createFallingElement();
             continue;
         }
 
         const perspectiveScale = focalLength / el.z;
-
         const size = el.baseSize * perspectiveScale * zoomLevel;
         const opacity = Math.max(0, Math.min(1, perspectiveScale));
 
@@ -243,7 +252,6 @@ function drawFallingElements() {
         const displayY = (el.y - cameraY) * perspectiveScale + canvas.height / 2;
 
         ctx.save();
-
         ctx.globalAlpha = opacity;
 
         if (el.type === 'phrase') {
@@ -252,8 +260,9 @@ function drawFallingElements() {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
+            // Reduce el blur para móviles
             ctx.shadowColor = currentTextColor;
-            ctx.shadowBlur = 5 * perspectiveScale;
+            ctx.shadowBlur = window.innerWidth < 800 ? 2 * perspectiveScale : 5 * perspectiveScale;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
@@ -271,7 +280,7 @@ function drawFallingElements() {
         if ((displayX + size / 2 < 0 || displayX - size / 2 > canvas.width ||
              displayY + size / 2 < 0 || displayY - size / 2 > canvas.height) && el.z > focalLength) {
             fallingElements.splice(i, 1);
-            createFallingElement();
+            if (fallingElements.length < maxElements) createFallingElement();
         }
     }
 }
@@ -346,11 +355,22 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 animate();
 
-setInterval(createShootingStar, 500);
+const shootingStarInterval = window.innerWidth < 800 ? 1000 : 500;
+setInterval(createShootingStar, shootingStarInterval);
 
-const initialFallingElementsCount = 50;
+const initialFallingElementsCount = window.innerWidth < 800 ? 20 : 50;
 for (let i = 0; i < initialFallingElementsCount; i++) {
     createFallingElement();
 }
 
-setInterval(createFallingElement, 100);
+// Reduce la frecuencia de creación para móviles
+const fallingElementInterval = window.innerWidth < 800 ? 300 : 100;
+setInterval(createFallingElement, fallingElementInterval);
+
+setInterval(createShootingStar, shootingStarInterval);
+
+for (let i = 0; i < initialFallingElementsCount; i++) {
+    createFallingElement();
+}
+
+setInterval(createFallingElement, fallingElementInterval);
