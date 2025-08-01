@@ -31,8 +31,6 @@ const phrases = [
     "Me encantas sonlla",
     "ashiteru sonlla",
     "Te quiero mucho sonlla",
-    'Me encantas mucho sonlla',
-    "me gustas mucho sonlla",
 ];
 
 const images = [
